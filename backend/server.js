@@ -27,7 +27,8 @@ if (fs.existsSync(envFile)) {
     if (idx === -1) return;
     const key = trimmed.slice(0, idx).trim();
     const val = trimmed.slice(idx + 1).trim();
-    process.env[key] = val;
+    // Don't override vars already set by the host environment (e.g. Railway's PORT)
+    if (!process.env[key]) process.env[key] = val;
   });
 }
 
