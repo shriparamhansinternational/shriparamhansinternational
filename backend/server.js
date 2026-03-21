@@ -1,10 +1,14 @@
-const express    = require('express');
-const cors       = require('cors');
-const nodemailer = require('nodemailer');
-const fs         = require('fs');
-const path       = require('path');
+const express = require('express');
+const cors    = require('cors');
+const fs      = require('fs');
+const path    = require('path');
+const { Resend } = require('resend');
 
-// Load .env for local development (Render/Railway use their own env vars)
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Load .env for local dev (Render uses its own env vars)
 const envFile = path.join(__dirname, '.env');
 if (fs.existsSync(envFile)) {
   fs.readFileSync(envFile, 'utf8').split('\n').forEach(line => {
@@ -14,20 +18,14 @@ if (fs.existsSync(envFile)) {
     if (idx === -1) return;
     const key = trimmed.slice(0, idx).trim();
     const val = trimmed.slice(idx + 1).trim();
-    if (!process.env[key]) process.env[key] = val; // don't override host env vars
+    if (!process.env[key]) process.env[key] = val;
   });
 }
 
-const app = express();
-
-// ── Middleware ─────────────────────────────────────────
-app.use(cors());
-app.use(express.json());
-
-// ── Read credentials from env (Railway sets these via Variables tab) ──
-const OWNER_EMAIL  = process.env.OWNER_EMAIL  || 'shriparamhansinternational@gmail.com';
-const APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
-const emailReady   = !!APP_PASSWORD && APP_PASSWORD !== 'your_16_character_app_password_here';
+const OWNER_EMAIL = process.env.OWNER_EMAIL || 'shriparamhansinternational@gmail.com';
+const RESEND_KEY  = process.env.RESEND_API_KEY || '';
+const emailReady  = !!RESEND_KEY;
+const resend      = emailReady ? new Resend(RESEND_KEY) : null;
 
 // ── POST /api/contact ──────────────────────────────────
 app.post('/api/contact', async (req, res) => {
@@ -51,7 +49,7 @@ app.post('/api/contact', async (req, res) => {
     message,
   };
 
-  // Save to submissions.json
+  // Save submission
   const file = path.join(__dirname, 'submissions.json');
   let all = [];
   if (fs.existsSync(file)) {
@@ -61,37 +59,32 @@ app.post('/api/contact', async (req, res) => {
   fs.writeFileSync(file, JSON.stringify(all, null, 2));
   console.log(`📬 New inquiry — ${name} <${email}>`);
 
+  // Respond immediately, send email in background
+  res.status(200).json({ success: true, message: 'Message received. We will get back to you within 24 hours.' });
+
   if (emailReady) {
-    // Send email in background — don't block the response
     setImmediate(async () => {
       try {
-        const transporter = nodemailer.createTransport({
-          host: 'smtp.gmail.com',
-          port: 587,
-          secure: false, // STARTTLS — works on Render free tier
-          auth: { user: OWNER_EMAIL, pass: APP_PASSWORD },
-        });
-        await transporter.sendMail({
-          from:    `"SPI Website" <${OWNER_EMAIL}>`,
+        // Owner notification
+        await resend.emails.send({
+          from:    'SPI Website <onboarding@resend.dev>',
           to:      OWNER_EMAIL,
           subject: `🔔 New Inquiry from ${name} — ${record.subject}`,
           html:    ownerHTML(record),
         });
-        await transporter.sendMail({
-          from:    `"Shri Paramhans International" <${OWNER_EMAIL}>`,
+        // Auto-reply to visitor
+        await resend.emails.send({
+          from:    'SPI Website <onboarding@resend.dev>',
           to:      email,
           subject: `Thank you for contacting SPI — We'll respond within 24 hours`,
           html:    replyHTML(record),
         });
-        console.log(`✅ Emails sent`);
+        console.log(`✅ Emails sent via Resend`);
       } catch (err) {
-        console.error(`❌ Email error: ${err.message}`);
+        console.error(`❌ Resend error: ${err.message}`);
       }
     });
   }
-
-  // Respond immediately — don't wait for email
-  return res.status(200).json({ success: true, message: 'Message received. We will get back to you within 24 hours.' });
 });
 
 // ── GET /api/health ────────────────────────────────────
@@ -107,11 +100,11 @@ app.get('/api/submissions', (_req, res) => {
   res.json({ total: data.length, submissions: data });
 });
 
-// ── Start — Railway requires 0.0.0.0 and uses $PORT ───
+// ── Start ──────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ SPI Backend running on port ${PORT}`);
-  console.log(`   Email: ${emailReady ? 'configured' : 'NOT configured'}`);
+  console.log(`   Email: ${emailReady ? 'configured (Resend)' : 'NOT configured'}`);
 });
 
 // ── Email Templates ────────────────────────────────────
@@ -128,7 +121,6 @@ function ownerHTML(s) {
     .row{margin-bottom:16px}
     .lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c9a84c;margin-bottom:3px}
     .val{font-size:14px;color:#0a1628;font-weight:500}
-    .val a{color:#1a3a6b;text-decoration:none}
     hr{border:none;border-top:1px solid #eee;margin:20px 0}
     .msg{background:#f8f9fc;border-left:4px solid #c9a84c;padding:14px 18px;font-size:13px;color:#333;line-height:1.7;white-space:pre-wrap;border-radius:0 6px 6px 0}
     .btn{display:inline-block;margin-top:20px;padding:12px 26px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#0a1628;font-weight:700;font-size:13px;border-radius:6px;text-decoration:none}
@@ -140,7 +132,7 @@ function ownerHTML(s) {
     <div class="body">
       <div class="alert">🔔 You have a new contact form submission.</div>
       <div class="row"><div class="lbl">Name</div><div class="val">${s.name}</div></div>
-      <div class="row"><div class="lbl">Email</div><div class="val"><a href="mailto:${s.email}">${s.email}</a></div></div>
+      <div class="row"><div class="lbl">Email</div><div class="val">${s.email}</div></div>
       <div class="row"><div class="lbl">Phone</div><div class="val">${s.phone}</div></div>
       <div class="row"><div class="lbl">Company</div><div class="val">${s.company}</div></div>
       <div class="row"><div class="lbl">Subject</div><div class="val">${s.subject}</div></div>
@@ -179,20 +171,17 @@ function replyHTML(s) {
       <h2>Thank you, ${s.name}!</h2>
       <p>We have received your inquiry and will respond within <strong>24 business hours</strong>.</p>
       <div class="box">
-        <p><strong>Submission Summary</strong></p>
         <p><strong>Name:</strong> ${s.name}</p>
         <p><strong>Company:</strong> ${s.company}</p>
         <p><strong>Subject:</strong> ${s.subject}</p>
         <p><strong>Received:</strong> ${s.timestamp} IST</p>
       </div>
-      <p>For urgent requirements, contact us directly:</p>
       <p>📞 <a href="tel:+919872273080">+91 98722 73080</a></p>
       <p>✉️ <a href="mailto:shriparamhansinternational@gmail.com">shriparamhansinternational@gmail.com</a></p>
       <div class="sig">Warm regards,<br><strong>Balwinder Singh</strong><br>Shri Paramhans International (SPI)<br>Punjab, India</div>
     </div>
     <div class="ftr">
       <p>© ${new Date().getFullYear()} Shri Paramhans International (SPI)</p>
-      <p><a href="mailto:shriparamhansinternational@gmail.com">shriparamhansinternational@gmail.com</a></p>
     </div>
   </div></body></html>`;
 }
