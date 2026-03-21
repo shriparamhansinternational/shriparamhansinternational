@@ -62,31 +62,35 @@ app.post('/api/contact', async (req, res) => {
   console.log(`📬 New inquiry — ${name} <${email}>`);
 
   if (emailReady) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: { user: OWNER_EMAIL, pass: APP_PASSWORD },
-      });
-      await transporter.sendMail({
-        from:    `"SPI Website" <${OWNER_EMAIL}>`,
-        to:      OWNER_EMAIL,
-        subject: `🔔 New Inquiry from ${name} — ${record.subject}`,
-        html:    ownerHTML(record),
-      });
-      await transporter.sendMail({
-        from:    `"Shri Paramhans International" <${OWNER_EMAIL}>`,
-        to:      email,
-        subject: `Thank you for contacting SPI — We'll respond within 24 hours`,
-        html:    replyHTML(record),
-      });
-      console.log(`✅ Emails sent`);
-    } catch (err) {
-      console.error(`❌ Email error: ${err.message}`);
-    }
+    // Send email in background — don't block the response
+    setImmediate(async () => {
+      try {
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false, // STARTTLS — works on Render free tier
+          auth: { user: OWNER_EMAIL, pass: APP_PASSWORD },
+        });
+        await transporter.sendMail({
+          from:    `"SPI Website" <${OWNER_EMAIL}>`,
+          to:      OWNER_EMAIL,
+          subject: `🔔 New Inquiry from ${name} — ${record.subject}`,
+          html:    ownerHTML(record),
+        });
+        await transporter.sendMail({
+          from:    `"Shri Paramhans International" <${OWNER_EMAIL}>`,
+          to:      email,
+          subject: `Thank you for contacting SPI — We'll respond within 24 hours`,
+          html:    replyHTML(record),
+        });
+        console.log(`✅ Emails sent`);
+      } catch (err) {
+        console.error(`❌ Email error: ${err.message}`);
+      }
+    });
   }
 
+  // Respond immediately — don't wait for email
   return res.status(200).json({ success: true, message: 'Message received. We will get back to you within 24 hours.' });
 });
 
