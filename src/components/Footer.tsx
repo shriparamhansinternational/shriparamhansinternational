@@ -3,8 +3,6 @@ import '../styles/Footer.css';
 import logoImg from '../assets/SPI FINAL LOGO copy.png';
 
 const Footer = () => {
-  const year = new Date().getFullYear();
-
   return (
     <footer className="footer">
       <div className="container">
