@@ -40,7 +40,9 @@ const emailReady   = APP_PASSWORD && APP_PASSWORD !== 'your_16_character_app_pas
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
-  process.env.FRONTEND_URL, // e.g. https://your-site.netlify.app or https://yourdomain.com
+  'https://shriparamhansinternational.netlify.app',
+  'https://shriparamhansinternational-production.up.railway.app',
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
