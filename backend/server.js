@@ -36,15 +36,9 @@ const APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
 const emailReady   = APP_PASSWORD && APP_PASSWORD !== 'your_16_character_app_password_here';
 
 // ── Middleware ─────────────────────────────────────────
-// Allow localhost in dev + production frontend URL (set FRONTEND_URL in backend .env)
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:4173',
-  'https://shriparamhansinternational.netlify.app',
-  'https://shriparamhansinternational-production.up.railway.app',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-app.use(cors({ origin: allowedOrigins }));
+// Allow all origins (safe for a contact form API)
+app.use(cors());
+app.use(express.json());
 app.use(express.json());
 
 // ── POST /api/contact ──────────────────────────────────
