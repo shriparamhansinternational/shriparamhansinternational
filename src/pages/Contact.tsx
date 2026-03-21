@@ -74,8 +74,8 @@ const Contact = () => {
     setStatus('loading');
 
     try {
-      // Uses VITE_API_URL env var in production, falls back to localhost for dev
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      // Uses VITE_API_URL env var in production, falls back to Railway URL
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://shriparamhansinternational-production.up.railway.app';
       const response = await fetch(`${apiUrl}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
