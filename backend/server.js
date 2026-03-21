@@ -135,7 +135,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // ── Start ──────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log('\n================================================');
   console.log('  SPI Backend Server');
   console.log(`  http://localhost:${PORT}`);
