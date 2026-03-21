@@ -109,3 +109,86 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ SPI Backend running on port ${PORT}`);
   console.log(`   Email: ${emailReady ? 'configured' : 'NOT configured'}`);
 });
+
+// ── Email Templates ────────────────────────────────────
+
+function ownerHTML(s) {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body{font-family:Arial,sans-serif;background:#f0f2f5;margin:0;padding:20px}
+    .wrap{max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+    .hdr{background:linear-gradient(135deg,#0a1628,#1a3a6b);padding:28px 36px;text-align:center}
+    .hdr h1{color:#c9a84c;font-size:18px;letter-spacing:3px;margin:0 0 4px}
+    .hdr p{color:rgba(255,255,255,.55);font-size:12px;margin:0}
+    .body{padding:32px 36px}
+    .alert{background:#fff8e1;border:1px solid #c9a84c;border-radius:6px;padding:12px 16px;margin-bottom:24px;font-size:13px;color:#7a5c00}
+    .row{margin-bottom:16px}
+    .lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#c9a84c;margin-bottom:3px}
+    .val{font-size:14px;color:#0a1628;font-weight:500}
+    .val a{color:#1a3a6b;text-decoration:none}
+    hr{border:none;border-top:1px solid #eee;margin:20px 0}
+    .msg{background:#f8f9fc;border-left:4px solid #c9a84c;padding:14px 18px;font-size:13px;color:#333;line-height:1.7;white-space:pre-wrap;border-radius:0 6px 6px 0}
+    .btn{display:inline-block;margin-top:20px;padding:12px 26px;background:linear-gradient(135deg,#c9a84c,#e8c96a);color:#0a1628;font-weight:700;font-size:13px;border-radius:6px;text-decoration:none}
+    .ftr{background:#0a1628;padding:16px 36px;text-align:center}
+    .ftr p{color:rgba(255,255,255,.3);font-size:11px;margin:0}
+  </style></head><body>
+  <div class="wrap">
+    <div class="hdr"><h1>NEW INQUIRY — SPI</h1><p>Shri Paramhans International Website</p></div>
+    <div class="body">
+      <div class="alert">🔔 You have a new contact form submission.</div>
+      <div class="row"><div class="lbl">Name</div><div class="val">${s.name}</div></div>
+      <div class="row"><div class="lbl">Email</div><div class="val"><a href="mailto:${s.email}">${s.email}</a></div></div>
+      <div class="row"><div class="lbl">Phone</div><div class="val">${s.phone}</div></div>
+      <div class="row"><div class="lbl">Company</div><div class="val">${s.company}</div></div>
+      <div class="row"><div class="lbl">Subject</div><div class="val">${s.subject}</div></div>
+      <div class="row"><div class="lbl">Received</div><div class="val">${s.timestamp} IST</div></div>
+      <hr>
+      <div class="row"><div class="lbl">Message</div><div class="msg">${s.message}</div></div>
+      <a class="btn" href="mailto:${s.email}?subject=Re: ${s.subject}">Reply to ${s.name} →</a>
+    </div>
+    <div class="ftr"><p>© ${new Date().getFullYear()} Shri Paramhans International (SPI)</p></div>
+  </div></body></html>`;
+}
+
+function replyHTML(s) {
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    body{font-family:Arial,sans-serif;background:#f0f2f5;margin:0;padding:20px}
+    .wrap{max-width:580px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+    .hdr{background:linear-gradient(135deg,#0a1628,#1a3a6b);padding:36px;text-align:center}
+    .hdr h1{color:#c9a84c;font-size:22px;letter-spacing:3px;margin:0 0 6px}
+    .hdr p{color:rgba(255,255,255,.5);font-size:12px;margin:0}
+    .body{padding:36px}
+    .body h2{color:#0a1628;font-size:18px;margin:0 0 14px}
+    .body p{color:#555;font-size:14px;line-height:1.8;margin:0 0 14px}
+    .box{background:#f8f9fc;border:1px solid #e2e8f0;border-radius:8px;padding:18px 22px;margin:18px 0}
+    .box p{font-size:13px;color:#444;margin:0 0 7px}
+    .box strong{color:#0a1628}
+    .body a{color:#1a3a6b;font-weight:600;text-decoration:none}
+    .sig{margin-top:24px;padding-top:18px;border-top:1px solid #eee;font-size:13px;color:#888;line-height:1.7}
+    .sig strong{color:#0a1628;font-size:14px}
+    .ftr{background:#0a1628;padding:20px 36px;text-align:center}
+    .ftr p{color:rgba(255,255,255,.3);font-size:11px;margin:3px 0}
+    .ftr a{color:#c9a84c;text-decoration:none}
+  </style></head><body>
+  <div class="wrap">
+    <div class="hdr"><h1>SPI</h1><p>Shri Paramhans International — Core of Professionals</p></div>
+    <div class="body">
+      <h2>Thank you, ${s.name}!</h2>
+      <p>We have received your inquiry and will respond within <strong>24 business hours</strong>.</p>
+      <div class="box">
+        <p><strong>Submission Summary</strong></p>
+        <p><strong>Name:</strong> ${s.name}</p>
+        <p><strong>Company:</strong> ${s.company}</p>
+        <p><strong>Subject:</strong> ${s.subject}</p>
+        <p><strong>Received:</strong> ${s.timestamp} IST</p>
+      </div>
+      <p>For urgent requirements, contact us directly:</p>
+      <p>📞 <a href="tel:+919872273080">+91 98722 73080</a></p>
+      <p>✉️ <a href="mailto:shriparamhansinternational@gmail.com">shriparamhansinternational@gmail.com</a></p>
+      <div class="sig">Warm regards,<br><strong>Balwinder Singh</strong><br>Shri Paramhans International (SPI)<br>Punjab, India</div>
+    </div>
+    <div class="ftr">
+      <p>© ${new Date().getFullYear()} Shri Paramhans International (SPI)</p>
+      <p><a href="mailto:shriparamhansinternational@gmail.com">shriparamhansinternational@gmail.com</a></p>
+    </div>
+  </div></body></html>`;
+}
