@@ -4,6 +4,20 @@ const nodemailer = require('nodemailer');
 const fs         = require('fs');
 const path       = require('path');
 
+// Load .env for local development (Render/Railway use their own env vars)
+const envFile = path.join(__dirname, '.env');
+if (fs.existsSync(envFile)) {
+  fs.readFileSync(envFile, 'utf8').split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const idx = trimmed.indexOf('=');
+    if (idx === -1) return;
+    const key = trimmed.slice(0, idx).trim();
+    const val = trimmed.slice(idx + 1).trim();
+    if (!process.env[key]) process.env[key] = val; // don't override host env vars
+  });
+}
+
 const app = express();
 
 // ── Middleware ─────────────────────────────────────────
