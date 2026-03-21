@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <!-- Outer circle -->
+  <circle cx="150" cy="150" r="140" fill="#0a1628" stroke="#c9a84c" stroke-width="3"/>
+  <circle cx="150" cy="150" r="130" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+
+  <!-- Globe -->
+  <circle cx="150" cy="130" r="55" fill="#1a3a6b" stroke="#c9a84c" stroke-width="2"/>
+  <ellipse cx="150" cy="130" rx="25" ry="55" fill="none" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="95" y1="130" x2="205" y2="130" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/>
+  <line x1="100" y1="110" x2="200" y2="110" stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+  <line x1="100" y1="150" x2="200" y2="150" stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+
+  <!-- Swan body -->
+  <ellipse cx="150" cy="138" rx="18" ry="28" fill="white" opacity="0.95"/>
+  <!-- Swan neck -->
+  <path d="M150 110 Q158 95 155 80" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Swan head -->
+  <circle cx="154" cy="76" r="8" fill="white"/>
+
+  <!-- Wings -->
+  <path d="M132 130 Q100 110 85 125 Q100 140 132 138 Z" fill="#c9a84c" opacity="0.85"/>
+  <path d="M168 130 Q200 110 215 125 Q200 140 168 138 Z" fill="#c9a84c" opacity="0.85"/>
+
+  <!-- Torch above globe -->
+  <rect x="146" y="55" width="8" height="22" fill="#c9a84c" rx="2"/>
+  <ellipse cx="150" cy="52" rx="10" ry="6" fill="#c9a84c"/>
+  <!-- Flame -->
+  <path d="M150 30 Q158 40 155 52 Q150 45 145 52 Q142 40 150 30 Z" fill="#e8c96a"/>
+  <path d="M150 36 Q155 43 152 50 Q150 46 148 50 Q145 43 150 36 Z" fill="#fff" opacity="0.6"/>
+
+  <!-- Laurel branches -->
+  <path d="M80 200 Q70 185 75 175 Q85 185 80 200 Z" fill="#c9a84c" opacity="0.7"/>
+  <path d="M75 195 Q62 183 65 172 Q77 180 75 195 Z" fill="#c9a84c" opacity="0.7"/>
+  <path d="M72 188 Q58 178 60 167 Q72 173 72 188 Z" fill="#c9a84c" opacity="0.6"/>
+  <path d="M220 200 Q230 185 225 175 Q215 185 220 200 Z" fill="#c9a84c" opacity="0.7"/>
+  <path d="M225 195 Q238 183 235 172 Q223 180 225 195 Z" fill="#c9a84c" opacity="0.7"/>
+  <path d="M228 188 Q242 178 240 167 Q228 173 228 188 Z" fill="#c9a84c" opacity="0.6"/>
+
+  <!-- SPI Text -->
+  <text x="150" y="225" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="white" text-anchor="middle" letter-spacing="4">SPI</text>
+
+  <!-- Banner ribbon -->
+  <path d="M75 240 Q150 232 225 240 Q215 255 150 258 Q85 255 75 240 Z" fill="#1a3a6b" stroke="#c9a84c" stroke-width="1.5"/>
+  <text x="150" y="252" font-family="Arial, sans-serif" font-size="9" fill="#c9a84c" text-anchor="middle" letter-spacing="1">SHRI PARAMHANS INTERNATIONAL</text>
+
+  <!-- Tagline -->
+  <text x="150" y="278" font-family="Arial, sans-serif" font-size="7.5" fill="#c9a84c" text-anchor="middle" letter-spacing="1.5" opacity="0.85">WISDOM • INTEGRITY • EXCELLENCE</text>
+</svg>
