@@ -74,8 +74,7 @@ const Contact = () => {
     setStatus('loading');
 
     try {
-      // Uses VITE_API_URL env var in production, falls back to Railway URL
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://shriparamhansinternational-production.up.railway.app';
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://spi-backend-41mx.onrender.com';
       const response = await fetch(`${apiUrl}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
