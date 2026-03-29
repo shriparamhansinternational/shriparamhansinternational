@@ -250,7 +250,7 @@ const Home = () => {
       </section>
 
       {/* ── CTA BANNER ── */}
-      <section style={{
+      <section className="cta-banner-section" style={{
         background: 'linear-gradient(135deg, #0a1628 0%, #1a3a6b 100%)',
         padding: '100px 24px',
         textAlign: 'center',
@@ -271,7 +271,7 @@ const Home = () => {
             Connect with SPI today for premium stickers, metal labels, aluminium printing,
             tin printing, and all your industrial printing needs.
           </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="cta-buttons" style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to="/contact" className="btn-primary">Start a Conversation →</Link>
             <Link to="/portfolio" className="btn-outline">View Our Work</Link>
           </div>
